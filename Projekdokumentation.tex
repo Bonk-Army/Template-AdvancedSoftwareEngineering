@@ -1,0 +1,194 @@
+%======================================================================
+%	
+%	 __  __       _         ______ _ _      
+%	|  \/  |     (_)       |  ____(_) |     
+%	| \  / | __ _ _ _ __   | |__   _| | ___ 
+%	| |\/| |/ _` | | '_ \  |  __| | | |/ _ \
+%	| |  | | (_| | | | | | | |    | | |  __/
+%	|_|  |_|\__,_|_|_| |_| |_|    |_|_|\___|
+%
+%----------------------------------------------------------------------
+% Descripton : Main File to compose the resulting PDF
+%======================================================================
+%\pdfobjcompresslevel=0
+\pdfminorversion=7
+\pdfinclusioncopyfonts=1
+\documentclass[
+				ngerman             % neue deutsche Rechtschreibung
+				,a4paper            % Papiergrösse
+				,twoside            % Zweiseitiger Druck (rechts/links)
+				% ,10pt             % Schriftgrösse
+				,11pt
+				% ,12pt
+				,pdftex
+				%  ,disable         % Todo-Markierungen auschalten
+				,notitlepage		% Thanks abstract... preventing it from removing pageNumber
+				]{report}
+
+%————————————————————————————————————————————————————————————————————————————
+%					Import aller Konfigurationen
+%————————————————————————————————————————————————————————————————————————————
+\usepackage{./config/DHBW/bericht}
+\usepackage{./config/PaketeProjektarbeit} % <- spezifische Pakete für die Projektarbeit
+\usepackage{./config/Pakete}
+\usepackage{./config/Befehle}
+\usepackage{./config/Layout}
+\usepackage{./config/Styles}
+%Wenn PDF/A-1B gewünscht .. Achtung am besten nochmal mit veraPDF testen!
+\usepackage{./config/PDFStandard}
+
+%————————————————————————————————————————————————————————————————————————————
+%					Variablen deklarieren
+%————————————————————————————————————————————————————————————————————————————
+\include{./config/Variables}
+
+%————————————————————————————————————————————————————————————————————————————
+%					Informationen ausfüllen
+%————————————————————————————————————————————————————————————————————————————
+\include{./config/Informationen}
+\include{./config/HyperrefSetup}
+
+
+%————————————————————————————————————————————————————————————————————————————
+%					Sonstige Einstellungen
+%————————————————————————————————————————————————————————————————————————————
+\bibliography{./directories/bibliography}
+\loadglsentries{./directories/glossary}
+\makeglossaries
+
+%————————————————————————————————————————————————————————————————————————————
+%					Einstellungen
+%————————————————————————————————————————————————————————————————————————————
+% Debug auf true setzen, hierbei wird der Changelog hinzugefügt, und keine Doppelseitenumbrüche gemacht (Zum drucken -> false)
+% Bitte zum drucken oben in der Präambel auch auf Doppelseite schalten!
+\setboolean{DEBUG}{true}
+% Soll eine Erklärung eigefügt werden ?
+\setboolean{ERKLAERUNG}{false}
+%Soll das Abstract eingefügt werden ?
+\setboolean{ABSTRACT}{false}
+%Soll ne Trennlinie im Inhaltsverzeichnis eingefügt werden, vor Verzeichnissen, dem Inhalt und dem Anhang
+\setboolean{TRENNSTRICHE}{true}
+%Setzt ein Watermark
+\setboolean{WATERMARK}{false}
+%Dokumentenverzeichnis generieren ?
+
+%————————————————————————————————————————————————————————————————————————————
+%					Watermark
+%————————————————————————————————————————————————————————————————————————————
+\ifthenelse{\boolean{WATERMARK}}{\usepackage{draftwatermark}}{}
+\ifthenelse{\boolean{WATERMARK}}{\SetWatermarkText{Entwurf}}{}
+
+%————————————————————————————————————————————————————————————————————————————
+%									Anfang Dokument
+%————————————————————————————————————————————————————————————————————————————
+\begin{document}
+	% Wer keine Seitenzahlen braucht bis zum TOC einfach das Pagenumbering auf gobble und an der Stelle an der die Seitenzählung beginnen soll roman einfügen
+	\pagenumbering{gobble}
+	\pagestyle{plain}
+	
+	%—————————————————————————————————————————————————————————————————————————
+	%								Deckseite
+	%—————————————————————————————————————————————————————————————————————————
+	\begin{titlepage}
+		\include{./pages/orga/titlepage}
+	\end{titlepage}
+
+	% Ab hier beginnt die Seitenzählung für den Prefix in kleinen römischen Zahlen
+	% Erste Seite nach der Titelseite
+	\pagenumbering{roman}
+	\setcounter{page}{2}
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	
+	
+	%—————————————————————————————————————————————————————————————————————————
+	%								Erklärung
+	%—————————————————————————————————————————————————————————————————————————
+	\ifthenelse{\boolean{ERKLAERUNG}}{\phantomsection}{}
+	\ifthenelse{\boolean{ERKLAERUNG}}{\input{./pages/orga/erklaerung.tex}}{}
+	\ifthenelse{\boolean{ERKLAERUNG}}{\addcontentsline{toc}{chapter}{Erklärung}}{}
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	%—————————————————————————————————————————————————————————————————————————
+	%								Abstract
+	%—————————————————————————————————————————————————————————————————————————
+	\ifthenelse{\boolean{ABSTRACT}}{\phantomsection}{}
+	\ifthenelse{\boolean{ABSTRACT}}{\include{./pages/content/abstract}}{}
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	%—————————————————————————————————————————————————————————————————————————
+	%							Inhaltsverzeichnis
+	%—————————————————————————————————————————————————————————————————————————
+	\setcounter{tocdepth}{1}% Allow only \chapter in ToC
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	\phantomsection
+	\addcontentsline{toc}{chapter}{Inhaltsverzeichnis}
+	\tableofcontents           % Inhaltsverzeichnis hier ausgeben
+	\ifthenelse{\boolean{DEBUG}}{\newpage}{\cleardoublepage}
+	
+	\phantomsection
+	\listoffigures             % Liste der Abbildungen
+	\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+	\ifthenelse{\boolean{DEBUG}}{\newpage}{\cleardoublepage}
+	
+	\phantomsection
+	\lstlistoflistings         % Liste der Codeschnipsel
+	\addcontentsline{toc}{chapter}{Codeverzeichnis}
+	\ifthenelse{\boolean{DEBUG}}{\newpage}{\cleardoublepage}
+	
+	\phantomsection
+	\include{directories/acronyms} %Acronyms
+	\ifthenelse{\boolean{DEBUG}}{\newpage}{\cleardoublepage}
+	
+	\ifthenelse{\boolean{TRENNSTRICHE}}{\addtocontents{toc}{\protect\mbox{}\protect\hrulefill\par}}{}
+	
+	\ifthenelse{\boolean{DEBUG}}{\newpage}{\cleardoublepage}
+		
+	
+	%—————————————————————————————————————————————————————————————————————————
+	%								Inhalt
+	%—————————————————————————————————————————————————————————————————————————
+	%Hauptteil normale arabische Zählung, beginnend bei 1 und alten Pagestyle wiederherstellen!
+	\pagenumbering{arabic} 
+	\setcounter{page}{1}
+	\pagestyle{headings} %<- Pagestyle reset 
+	
+	\include{pages/content/kapitel1_ddd}
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	\include{pages/content/kapitel2_cleanArchitecture}
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	\include{pages/content/kapitel3_programmingPrinciples}
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	\include{pages/content/kapitel4_refactoring}
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	\include{pages/content/kapitel5_entwurfsmuster}
+	%Trennlinie fürs ToC beim letzten Kapitel!
+	\ifthenelse{\boolean{TRENNSTRICHE}}{\addtocontents{toc}{\protect\mbox{}\protect\hrulefill\par}}{}
+	
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	%—————————————————————————————————————————————————————————————————————————
+	%								Anhang
+	%—————————————————————————————————————————————————————————————————————————
+	%Anhang mit großen römischen Zahlen
+	\pagenumbering{Roman}
+	\appendix
+	\include{./appendix/mainAppendix}
+	\cleardoublepage
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+	%—————————————————————————————————————————————————————————————————————————
+	%						Literaturverzeichnis
+	%—————————————————————————————————————————————————————————————————————————
+	\renewcommand\bibname{Literaturverzeichnis \\ \vspace{10mm} \normalsize{} Alle Quellen sind zusätzlich im Ordner \HREF{./Quellensicherung}{Quellensicherung} gespeichert ! \vspace{-2cm}}
+	\phantomsection
+	\addcontentsline{toc}{chapter}{Literaturverzeichnis}
+	\printbibliography
+	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
+	
+\end{document}
