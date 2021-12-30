@@ -138,11 +138,9 @@
 	\ifthenelse{\boolean{DEBUG}}{\newpage}{\cleardoublepage}
 	
 	\phantomsection
-	\include{directories/acronyms} %Acronyms
-	\ifthenelse{\boolean{DEBUG}}{\newpage}{\cleardoublepage}
-	
 	\ifthenelse{\boolean{TRENNSTRICHE}}{\addtocontents{toc}{\protect\mbox{}\protect\hrulefill\par}}{}
-	
+	\include{directories/acronyms} %Acronyms
+
 	\ifthenelse{\boolean{DEBUG}}{\newpage}{\cleardoublepage}
 		
 	
@@ -166,9 +164,9 @@
 	\include{pages/content/kapitel4_refactoring}
 	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
 	
+	\ifthenelse{\boolean{TRENNSTRICHE}}{\addtocontents{toc}{\protect\mbox{}\protect\hrulefill\par}}{}
 	\include{pages/content/kapitel5_entwurfsmuster}
 	%Trennlinie fürs ToC beim letzten Kapitel!
-	\ifthenelse{\boolean{TRENNSTRICHE}}{\addtocontents{toc}{\protect\mbox{}\protect\hrulefill\par}}{}
 	
 	\ifthenelse{\boolean{DEBUG}}{}{\cleardoublepage}
 	
